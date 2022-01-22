@@ -37,6 +37,8 @@ end
 function love.draw()
 	push:apply('start')
 
+	love.graphics.clear(40/255, 45/255, 52/255, 255/255)
+
 	love.graphics.printf (
 		'Hello Pong!',
 		0,

@@ -91,6 +91,8 @@ function love.draw()
 
 	love.graphics.setFont(smallFont)
 
+	love.graphics.printf('FPS: ' .. tostring(love.timer.getFPS()), 0, 0, VIRTUAL_WIDTH, 'center')
+
 	if gameState == 'start' then
         love.graphics.printf('Start State!', 0, 20, VIRTUAL_WIDTH, 'center')
     else

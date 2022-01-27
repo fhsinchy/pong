@@ -44,6 +44,36 @@ end
 
 -- invoked every frame
 function love.update(dt)
+	if ball:collides(player1) then
+		ball.dx = -ball.dx * 1.03
+		ball.x = player1.x + 5
+	end
+
+	if ball:collides(player2) then
+		ball.dx = -ball.dx * 1.03
+		ball.x = player2.x - 5
+	end
+
+	if ball.dy < 0 then
+		-- if the ball has a negative speed in y axis (goes up), then keep it negative but randomize the value
+		ball.dy = -math.random(10, 150)
+	else
+		-- if the ball has a positive speed in y axis (goes down), then keep it positive but randomize the value
+		ball.dy = math.random(10, 150)
+	end
+
+	-- detect upper and lower screen boundary collision and reverse if collided
+	if ball.y <= 0 then
+		ball.y = 0
+		ball.dy = -ball.dy
+	end
+
+	-- -4 to account for the ball's size
+	if ball.y >= VIRTUAL_HEIGHT - 4 then
+		ball.y = VIRTUAL_HEIGHT - 4
+		ball.dy = -ball.dy
+	end
+
 	if love.keyboard.isDown('w') then
 		player1.dy = -PADDLE_SPEED
 	elseif love.keyboard.isDown('s') then

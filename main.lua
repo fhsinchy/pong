@@ -57,6 +57,10 @@ function love.load()
 	gameState = 'start'
 end
 
+function love.resize(w, h)
+    push:resize(w, h)
+end
+
 -- invoked every frame
 function love.update(dt)
 	if gameState == 'serve' then

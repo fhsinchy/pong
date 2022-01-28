@@ -13,6 +13,8 @@ VIRTUAL_HEIGHT = 243
 
 PADDLE_SPEED = 200
 
+WINNING_SCORE = 10
+
 DEBUG = true
 
 -- invoked once
@@ -24,6 +26,7 @@ function love.load()
 	love.graphics.setDefaultFilter('nearest', 'nearest')
 
 	smallFont = love.graphics.newFont('font.ttf', 8)
+	largeFont = love.graphics.newFont('font.ttf', 16)
 	scoreFont = love.graphics.newFont('font.ttf', 32)
 
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT,
@@ -93,40 +96,52 @@ function love.update(dt)
 			ball.dy = -ball.dy
 		end
 
-		-- control for player 1
-		if love.keyboard.isDown('w') then
-			player1.dy = -PADDLE_SPEED
-		elseif love.keyboard.isDown('s') then
-			player1.dy = PADDLE_SPEED
-		else
-			player1.dy = 0
+		-- checks if the ball has passed through the left side of the screen
+		if ball.x < 0 then
+			servingPlayer = 1
+			player2Score = player2Score + 1
+
+			if player2Score == WINNING_SCORE then
+				gameState = 'done'
+				winningPlayer = 2
+			else
+				ball:reset()
+				gameState = 'serve'
+			end
 		end
-	
-		-- control for player 2
-		if love.keyboard.isDown('up') then
-			player2.dy = -PADDLE_SPEED
-		elseif love.keyboard.isDown('down') then
-			player2.dy = PADDLE_SPEED
-		else
-			player2.dy = 0
+
+		-- checks if the ball has passed through the right side of the screen
+		if ball.x > VIRTUAL_WIDTH then
+			servingPlayer = 2
+			player1Score = player1Score + 1
+			
+			if player1Score == WINNING_SCORE then
+				gameState = 'done'
+				winningPlayer = 1
+			else
+				ball:reset()
+				gameState = 'serve'
+			end
 		end
 	end
 
-	-- checks if the ball has passed through the left side of the screen
-	if ball.x < 0 then
-        servingPlayer = 1
-        player2Score = player2Score + 1
-        ball:reset()
-        gameState = 'serve'
-    end
+	-- control for player 1
+	if love.keyboard.isDown('w') then
+		player1.dy = -PADDLE_SPEED
+	elseif love.keyboard.isDown('s') then
+		player1.dy = PADDLE_SPEED
+	else
+		player1.dy = 0
+	end
 
-	-- checks if the ball has passed through the right side of the screen
-    if ball.x > VIRTUAL_WIDTH then
-        servingPlayer = 2
-        player1Score = player1Score + 1
-        ball:reset()
-        gameState = 'serve'
-    end
+	-- control for player 2
+	if love.keyboard.isDown('up') then
+		player2.dy = -PADDLE_SPEED
+	elseif love.keyboard.isDown('down') then
+		player2.dy = PADDLE_SPEED
+	else
+		player2.dy = 0
+	end
 
 	if gameState == 'play' then
 		ball:update(dt)
@@ -145,6 +160,17 @@ function love.keypressed(key)
             gameState = 'serve'
 		elseif gameState == 'serve' then
 			gameState = 'play'
+		elseif gameState == 'done' then
+			gameState = 'serve'
+
+			player1Score = 0
+			player2Score = 0
+
+			if winningPlayer == 1 then
+				servingPlayer = 2
+			else
+				servingPlayer = 1
+			end
         end
     end
 end
@@ -174,6 +200,12 @@ function love.draw()
         love.graphics.printf('Press Enter to serve!', 0, 20, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'play' then
         -- no UI messages to display in play
+	elseif gameState == 'done' then
+		love.graphics.setFont(largeFont)
+        love.graphics.printf('Player ' .. tostring(winningPlayer) .. ' wins!',
+            0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.setFont(smallFont)
+        love.graphics.printf('Press Enter to restart!', 0, 30, VIRTUAL_WIDTH, 'center')
     end
 
 	-- left paddle
@@ -192,6 +224,7 @@ function showDebugInfo()
 	love.graphics.setFont(smallFont)
 
 	love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 10)
+	love.graphics.print('STATE: ' .. gameState, 10, 18)
 end
 
 function showScore()

@@ -26,8 +26,6 @@ function love.load()
 	smallFont = love.graphics.newFont('font.ttf', 8)
 	scoreFont = love.graphics.newFont('font.ttf', 32)
 
-	love.graphics.setFont(smallFont)
-
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT,
 		{
 			fullscreen = false,
@@ -52,18 +50,24 @@ end
 -- invoked every frame
 function love.update(dt)
 	if gameState == 'serve' then
+		-- give the ball a random speed along the y axis
 		ball.dy = math.random(-50, 50)
+		
 		if servingPlayer == 1 then
+			-- if player 1 is servicng, then the ball will have a positive speed along the x axis
 			ball.dx = math.random(140, 200)
 		else
+			-- if player 2 is servicng, then the ball will have a negative speed along the x axis
 			ball.dx = -math.random(140, 200)
 		end
 	elseif gameState == 'play' then
+		-- collision detection between the ball and player 1
 		if ball:collides(player1) then
 			ball.dx = -ball.dx * 1.03
 			ball.x = player1.x + 5
 		end
 	
+		-- collision detection between the ball and player 2
 		if ball:collides(player2) then
 			ball.dx = -ball.dx * 1.03
 			ball.x = player2.x - 5
@@ -89,6 +93,7 @@ function love.update(dt)
 			ball.dy = -ball.dy
 		end
 
+		-- control for player 1
 		if love.keyboard.isDown('w') then
 			player1.dy = -PADDLE_SPEED
 		elseif love.keyboard.isDown('s') then
@@ -97,6 +102,7 @@ function love.update(dt)
 			player1.dy = 0
 		end
 	
+		-- control for player 2
 		if love.keyboard.isDown('up') then
 			player2.dy = -PADDLE_SPEED
 		elseif love.keyboard.isDown('down') then
@@ -106,6 +112,7 @@ function love.update(dt)
 		end
 	end
 
+	-- checks if the ball has passed through the left side of the screen
 	if ball.x < 0 then
         servingPlayer = 1
         player2Score = player2Score + 1
@@ -113,6 +120,7 @@ function love.update(dt)
         gameState = 'serve'
     end
 
+	-- checks if the ball has passed through the right side of the screen
     if ball.x > VIRTUAL_WIDTH then
         servingPlayer = 2
         player1Score = player1Score + 1

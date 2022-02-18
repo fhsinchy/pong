@@ -47,7 +47,7 @@ function love.load()
 	player1Score = 0
     player2Score = 0
 
-	player1 = Paddle(10, 30, 5, 20)
+	player1 = Paddle(5, 30, 5, 20)
 	player2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
 	
 	ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
@@ -68,10 +68,10 @@ function love.update(dt)
 		ball.dy = math.random(-50, 50)
 		
 		if servingPlayer == 1 then
-			-- if player 1 is servicng, then the ball will have a positive speed along the x axis
+			-- if player 1 is serving, then the ball will have a positive speed along the x axis
 			ball.dx = math.random(140, 200)
 		else
-			-- if player 2 is servicng, then the ball will have a negative speed along the x axis
+			-- if player 2 is serving, then the ball will have a negative speed along the x axis
 			ball.dx = -math.random(140, 200)
 		end
 	elseif gameState == 'play' then
